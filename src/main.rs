@@ -18,7 +18,16 @@ fn main() -> ExitCode {
 			let config = types::PortableConfig::new(
 				&options.sandbox_name.unwrap(),
 			);
-			config.print();
+			let result = start::start_portable(&config);
+			match result {
+				Ok(_string) => {},
+				Err(e) => {
+					println!(
+						"Could not start Portable: {}",
+						e.to_string(),
+					);
+				}
+			};
 		}
 
 		types::Action::Inspect => {
