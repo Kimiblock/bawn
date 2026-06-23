@@ -9,7 +9,7 @@ pub struct StartError (pub String);
 impl std::fmt::Display for StartError {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>)
 		-> std::result::Result<(), std::fmt::Error> {
-			write!(f, "Could not start Portable: {self}")
+			write!(f, "Could not start Portable: {}", self.0)
 		}
 }
 
