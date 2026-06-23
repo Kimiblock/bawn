@@ -1,6 +1,7 @@
 use std::process::ExitCode;
 mod types;
 mod validate_busname;
+mod generator;
 
 fn main() -> ExitCode {
 	let args = std::env::args();
@@ -11,6 +12,10 @@ fn main() -> ExitCode {
 	}
 	let options = cmdline_dispatcher(args);
 
+	match options.action {
+		types::Action::Start => {}
+	};
+
 	ExitCode::SUCCESS
 }
 
@@ -19,6 +24,7 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 	let mut ret = types::CmdOptions {
 		sandbox_name:	None,
 		exec_name:	None,
+		action:		types::Action::Start,
 	};
 
 	for (idx, argument) in args.enumerate() {
