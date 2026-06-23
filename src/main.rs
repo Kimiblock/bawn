@@ -48,9 +48,14 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 			}
 			_ => {
 				if argument == "--inspect" {
-					ret.action = types::Action::Inspect
+					ret.action = types::Action::Inspect;
+				} else {
+					println!(
+						"Unrecognised option {}",
+						argument,
+					);
 				}
-				println!("Unrecognised option {}", argument)
+
 			}
 		};
 	};
