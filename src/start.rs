@@ -13,7 +13,7 @@ impl std::fmt::Display for StartError {
 		}
 }
 
-pub fn start_portable(config: &types::PortableConfig) -> Result<String> {
+pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> {
 	let result = config.to_string();
 	let mut content = String::new();
 	match result {
@@ -23,5 +23,5 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<String> {
 		},
 	};
 
-	Ok(String::new())
+	Ok(Some(String::new()))
 }

@@ -8,6 +8,7 @@ pub struct CmdOptions {
 
 pub enum Action {
 	Start,
+	Inspect,
 }
 
 #[allow(non_snake_case)]

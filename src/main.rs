@@ -20,6 +20,13 @@ fn main() -> ExitCode {
 			);
 			config.print();
 		}
+
+		types::Action::Inspect => {
+			let config = types::PortableConfig::new(
+				&options.sandbox_name.unwrap(),
+			);
+			config.print();
+		}
 	};
 
 	ExitCode::SUCCESS
@@ -40,6 +47,9 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 				ret.sandbox_name = Some(argument);
 			}
 			_ => {
+				if argument == "--inspect" {
+					ret.action = types::Action::Inspect
+				}
 				println!("Unrecognised option {}", argument)
 			}
 		};
@@ -56,6 +66,8 @@ fn help() {
 	println!("Usage:");
 	println!("	bawn <sandbox name> [options]");
 	println!("	Note that <option> means required, [option] means optional");
+	println!("	Available options:");
+	println!("		--inspect: print out generated sandbox configuration");
 	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
 	println!("		apply for sandbox name");
 }
