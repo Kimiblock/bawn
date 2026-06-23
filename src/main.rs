@@ -23,7 +23,14 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 	for (idx, argument) in args.enumerate() {
 		match idx {
 			0 => {ret.exec_name = Some(argument);}
-			_ => {ret.sandbox_name = Some(argument)}
+			1 => {
+				if ret.sandbox_name.is_some() {
+					println!("Repeated sandbox name {}", argument)
+				} else {
+					ret.sandbox_name = Some(argument);
+				}
+			}
+			_ => {todo!();}
 		};
 	};
 	return ret
@@ -32,6 +39,6 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 fn help() {
 	println!("This is bawn, a transient profile generator for the Portable sandbox");
 	println!("Usage:");
-	println!("	bawn <sandbox name>");
+	println!("	bawn <sandbox name> [options]");
 	println!("	Note that <option> means required, [option] means optional");
 }
