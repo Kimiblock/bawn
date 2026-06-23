@@ -1,4 +1,5 @@
 pub struct CmdOptions {
-	SandboxName:		String
+	pub sandbox_name:		Option<String>,
+	pub exec_name:			Option<String>,
 }
 

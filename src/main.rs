@@ -1,16 +1,32 @@
 use std::process::ExitCode;
+mod types;
 
 fn main() -> ExitCode {
-	let args = std::env::args_os();
+	let args = std::env::args();
 	let args_len = args.len();
-	let trailing_s: char = 's';
 	if args_len <= 1 {
 		help();
 		return std::process::ExitCode::from(1);
 	}
-	println!("Bawn started with {} argument{}", args_len, trailing_s);
+	let options = cmdline_dispatcher(args);
 
 	ExitCode::SUCCESS
+}
+
+fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
+	println!("Bawn started with {} arguments", args.len());
+	let mut ret = types::CmdOptions {
+		sandbox_name:	None,
+		exec_name:	None,
+	};
+
+	for (idx, argument) in args.enumerate() {
+		match idx {
+			0 => {ret.exec_name = Some(argument);}
+			_ => {ret.sandbox_name = Some(argument)}
+		};
+	};
+	return ret
 }
 
 fn help() {
