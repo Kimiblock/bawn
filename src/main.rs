@@ -1,5 +1,6 @@
 use std::process::ExitCode;
 mod types;
+mod validate_busname;
 
 fn main() -> ExitCode {
 	let args = std::env::args();
@@ -24,15 +25,17 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 		match idx {
 			0 => {ret.exec_name = Some(argument);}
 			1 => {
-				if ret.sandbox_name.is_some() {
-					println!("Repeated sandbox name {}", argument)
-				} else {
-					ret.sandbox_name = Some(argument);
-				}
+				ret.sandbox_name = Some(argument);
 			}
-			_ => {todo!();}
+			_ => {
+				println!("Unrecognised option {}", argument)
+			}
 		};
 	};
+	let valid = ret.is_valid();
+	if ! valid {
+		panic!("Could not start sandbox: Invalid sandbox name")
+	}
 	return ret
 }
 
@@ -41,4 +44,6 @@ fn help() {
 	println!("Usage:");
 	println!("	bawn <sandbox name> [options]");
 	println!("	Note that <option> means required, [option] means optional");
+	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
+	println!("		apply for sandbox name");
 }
