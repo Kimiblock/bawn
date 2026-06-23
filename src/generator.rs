@@ -15,8 +15,11 @@ impl crate::types::PortableConfig {
 			}
 		}
 	}
+	pub fn to_string (self: &Self) -> Result<String, toml::ser::Error> {
+		toml::to_string_pretty(&self)
+	}
 	pub fn print (self: &Self) {
-		let result = toml::to_string_pretty(&self);
+		let result = self.to_string();
 		let content = match result {
 			Err(error) => {
 				panic!("Unable to produce configuration: {}", error);
