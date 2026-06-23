@@ -2,6 +2,7 @@ use std::process::ExitCode;
 mod types;
 mod validate_busname;
 mod generator;
+mod start;
 
 fn main() -> ExitCode {
 	let args = std::env::args();
@@ -13,7 +14,12 @@ fn main() -> ExitCode {
 	let options = cmdline_dispatcher(args);
 
 	match options.action {
-		types::Action::Start => {}
+		types::Action::Start => {
+			let config = types::PortableConfig::new(
+				&options.sandbox_name.unwrap(),
+			);
+			config.print();
+		}
 	};
 
 	ExitCode::SUCCESS

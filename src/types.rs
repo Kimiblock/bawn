@@ -1,3 +1,5 @@
+//use serde::Serialize;
+
 pub struct CmdOptions {
 	pub sandbox_name:		Option<String>,
 	pub exec_name:			Option<String>,
@@ -9,13 +11,15 @@ pub enum Action {
 }
 
 #[allow(non_snake_case)]
+#[derive(serde::Serialize)]
 pub struct PortableConfig {
-	pub Metadata:			PortableMetadata,
+	pub metadata:			PortableMetadata,
 }
 
 #[allow(non_snake_case)]
+#[derive(serde::Serialize)]
 pub struct PortableMetadata {
-	pub AppID:			String,
-	pub FriendlyName:		String,
-	pub StateDirectory:		String
+	pub appID:			String,
+	pub friendlyName:		String,
+	pub stateDirectory:		String
 }
