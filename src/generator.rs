@@ -12,6 +12,15 @@ impl crate::types::PortableConfig {
 				appID: id,
 				friendlyName: name,
 				stateDirectory: sandbox_name.to_string(),
+			},
+			exec: types::PortableExec {
+				target: "bash".to_string(),
+				arguments: vec![
+					String::from("--noprofile"),
+					String::from("--rcfile"),
+					String::from("/run/bashrc"),
+					String::from("-i"),
+				],
 			}
 		}
 	}
