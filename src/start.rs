@@ -133,14 +133,14 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 	let result = std::fs::remove_file(&rand_file_path);
 
 	let mut command = std::process::Command::new("/usr/bin/portable");
-	command.env("PORTABLE_CONF", &rand_file_path);
+	command.env("PORTABLE_CONF", "/proc/self/fd/1225");
 	command.arg("--actions");
 	command.arg("debug-shell");
 	let map_result = command.fd_mappings(
 		vec![
 			FdMapping{
 				parent_fd: file.into(),
-				child_fd: 1231,
+				child_fd: 1225,
 			}
 		]
 	);
