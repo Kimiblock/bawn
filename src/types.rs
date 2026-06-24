@@ -4,6 +4,7 @@ pub struct CmdOptions {
 	pub sandbox_name:		Option<String>,
 	pub exec_name:			Option<String>,
 	pub action:			Action,
+	pub game_mode:			bool,
 }
 
 pub enum Action {
