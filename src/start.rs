@@ -1,6 +1,7 @@
 use crate::types;
 use rand;
 use rand::prelude::*;
+use command_fds::{CommandFdExt, FdMapping};
 //use std::fs::File;
 //use std::result::Result;
 
@@ -129,7 +130,24 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		Err(e) => return Err(StartError(e.to_string()))
 	};
 
+	let result = std::fs::remove_file(&rand_file_path);
 
+	let mut command = std::process::Command::new("/usr/bin/portable");
+	command.env("PORTABLE_CONF", &rand_file_path);
+	command.arg("--actions");
+	command.arg("debug-shell");
+	let map_result = command.fd_mappings(
+		vec![
+			FdMapping{
+				parent_fd: file.into(),
+				child_fd: 1231,
+			}
+		]
+	);
+	match map_result {
+		Ok(_cmd) => {}
+		Err(e) => {return Err(StartError(e.to_string()));}
+	}
 
 	Ok(Some(String::new()))
 }
