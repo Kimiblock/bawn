@@ -13,14 +13,16 @@ fn main() -> ExitCode {
 	}
 	let options = cmdline_dispatcher(args);
 
+	let mut config = types::PortableConfig::new(
+		&options.sandbox_name.unwrap(),
+	);
+	if options.game_mode {
+		config.system.deviceAllow = vec!["dgpu".to_string()]
+	}
+
 	match options.action {
+
 		types::Action::Start => {
-			let mut config = types::PortableConfig::new(
-				&options.sandbox_name.unwrap(),
-			);
-			if options.game_mode {
-				config.system.deviceAllow = vec!["dgpu".to_string()]
-			}
 			let result = start::start_portable(&config);
 			match result {
 				Ok(_string) => {},
@@ -34,9 +36,6 @@ fn main() -> ExitCode {
 		}
 
 		types::Action::Inspect => {
-			let config = types::PortableConfig::new(
-				&options.sandbox_name.unwrap(),
-			);
 			config.print();
 		}
 	};
