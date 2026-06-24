@@ -2,10 +2,6 @@ use crate::types;
 use rand;
 use rand::prelude::*;
 use command_fds::{CommandFdExt, FdMapping};
-use std::io::stdin;
-use std::io::stdout;
-use std::io::stderr;
-use std::os::fd::AsFd;
 //use std::fs::File;
 //use std::result::Result;
 
@@ -135,6 +131,11 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 	};
 
 	let result = std::fs::remove_file(&rand_file_path);
+	match result {
+		Ok(result) => result,
+		Err(e) => println!("Could not remove temporary file: {}", e)
+	};
+
 
 	let mut command = std::process::Command::new("/usr/bin/portable");
 	command.env("PORTABLE_CONF", "/proc/self/fd/1225");
@@ -146,24 +147,26 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 				parent_fd: file.into(),
 				child_fd: 1225,
 			},
-			FdMapping{
-				parent_fd: stdin().as_fd().try_clone_to_owned().unwrap(),
-				child_fd: 0
-			},
-			FdMapping{
-				parent_fd: stdout().as_fd().try_clone_to_owned().unwrap(),
-				child_fd: 1
-			},
-			FdMapping{
-				parent_fd: stderr().as_fd().try_clone_to_owned().unwrap(),
-				child_fd: 2
-			}
 		]
 	);
 	match map_result {
 		Ok(_cmd) => {}
 		Err(e) => {return Err(StartError(e.to_string()));}
 	}
+
+	let spawn = command.spawn();
+
+	let mut child = match spawn {
+		Ok(result) => result,
+		Err(e) => return Err(StartError(e.to_string()))
+	};
+
+	let result = match child.wait() {
+		Ok(result) => result,
+		Err(e) => return Err(StartError(e.to_string()))
+	};
+
+	println!("Portable exited with code {}", result);
 
 	Ok(Some(String::new()))
 }
