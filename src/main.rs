@@ -47,6 +47,7 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 		sandbox_name:	None,
 		exec_name:	None,
 		action:		types::Action::Start,
+		game_mode:	false,
 	};
 
 	for (idx, argument) in args.enumerate() {
@@ -56,15 +57,17 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 				ret.sandbox_name = Some(argument);
 			}
 			_ => {
-				if argument == "--inspect" {
-					ret.action = types::Action::Inspect;
-				} else {
-					println!(
-						"Unrecognised option {}",
-						argument,
-					);
+				match argument.as_str() {
+					"--inspect" => {
+						ret.action = types::Action::Inspect;
+					}
+					_ => {
+						println!(
+							"Unrecognised option {}",
+							argument,
+						);
+					}
 				}
-
 			}
 		};
 	};
