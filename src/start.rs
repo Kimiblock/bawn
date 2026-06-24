@@ -2,6 +2,10 @@ use crate::types;
 use rand;
 use rand::prelude::*;
 use command_fds::{CommandFdExt, FdMapping};
+use std::io::stdin;
+use std::io::stdout;
+use std::io::stderr;
+use std::os::fd::AsFd;
 //use std::fs::File;
 //use std::result::Result;
 
@@ -141,6 +145,18 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 			FdMapping{
 				parent_fd: file.into(),
 				child_fd: 1225,
+			},
+			FdMapping{
+				parent_fd: stdin().as_fd().try_clone_to_owned().unwrap(),
+				child_fd: 0
+			},
+			FdMapping{
+				parent_fd: stdout().as_fd().try_clone_to_owned().unwrap(),
+				child_fd: 1
+			},
+			FdMapping{
+				parent_fd: stderr().as_fd().try_clone_to_owned().unwrap(),
+				child_fd: 2
 			}
 		]
 	);
