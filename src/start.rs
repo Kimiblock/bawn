@@ -82,7 +82,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 			break Err(StartError("Maximum retry for config path exceeded".to_string()))
 		}
 		retry_counter+=1;
-		let random = &rng.random_range(0..100);
+		let random = &rng.random_range(0..2147483647);
 		let mut file_pth: std::path::PathBuf = [&config_path].iter().collect();
 		file_pth.push(&config.metadata.appID);
 		file_pth.push(random.to_string());
