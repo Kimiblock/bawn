@@ -1,4 +1,6 @@
 use crate::types;
+use rand;
+use rand::prelude::*;
 //use std::fs::File;
 //use std::result::Result;
 
@@ -67,6 +69,29 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 			return Err(StartError(e.to_string()))
 		}
 	}
+
+
+
+	let mut retry_counter: u8 = 0;
+	let mut rng = rand::rng();
+	let rand_file_pth: Result<String> = loop {
+		if retry_counter > 5 {
+			break Err(StartError("Maximum retry for config path exceeded".to_string()))
+		}
+		retry_counter+=1;
+		let random = &rng.random_range(0..100);
+		let mut file_pth: std::path::PathBuf = [&config_path].iter().collect();
+		file_pth.push(&config.metadata.appID);
+		file_pth.push(random.to_string());
+		let exists = std::fs::exists(&file_pth);
+		match exists {
+			Ok(true) => {continue}
+			Ok(false) => {
+				break Ok(file_pth.into_os_string().into_string().unwrap())
+			}
+			Err(e) => {return Err(StartError(e.to_string()));}
+		}
+	};
 
 
 
