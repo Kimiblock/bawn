@@ -31,6 +31,7 @@ fn main() -> ExitCode {
 						"{}",
 						e.to_string(),
 					);
+					return ExitCode::FAILURE
 				}
 			};
 		}
