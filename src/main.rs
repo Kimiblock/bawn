@@ -23,7 +23,7 @@ fn main() -> ExitCode {
 				Ok(_string) => {},
 				Err(e) => {
 					println!(
-						"Could not start Portable: {}",
+						"{}",
 						e.to_string(),
 					);
 				}

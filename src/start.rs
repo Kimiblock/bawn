@@ -6,7 +6,8 @@ use rand::prelude::*;
 
 type Result<T> = std::result::Result<T, StartError>;
 
-//#[derive(Debug, Clone)]
+#[derive(Debug, Clone)]
+//#[derive(Debug)]
 pub struct StartError (pub String);
 
 impl std::fmt::Display for StartError {
@@ -74,7 +75,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 
 	let mut retry_counter: u8 = 0;
 	let mut rng = rand::rng();
-	let rand_file_pth: Result<String> = loop {
+	let rand_file_pth: Result<std::path::PathBuf> = loop {
 		if retry_counter > 5 {
 			break Err(StartError("Maximum retry for config path exceeded".to_string()))
 		}
@@ -87,13 +88,17 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		match exists {
 			Ok(true) => {continue}
 			Ok(false) => {
-				break Ok(file_pth.into_os_string().into_string().unwrap())
+				break Ok(file_pth)
 			}
 			Err(e) => {return Err(StartError(e.to_string()));}
 		}
 	};
 
-
+	let result = std::fs::write(&rand_file_pth.unwrap(), &content);
+	match result {
+		Ok(()) => {}
+		Err(e) => {return Err(StartError(e.to_string()))}
+	}
 
 
 
