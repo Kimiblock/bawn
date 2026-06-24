@@ -13,11 +13,16 @@ fn main() -> ExitCode {
 	}
 	let options = cmdline_dispatcher(args);
 
+	let mut config = types::PortableConfig::new(
+		&options.sandbox_name.unwrap(),
+	);
+	if options.game_mode {
+		config.system.deviceAllow = vec!["dgpu".to_string()]
+	}
+
 	match options.action {
+
 		types::Action::Start => {
-			let config = types::PortableConfig::new(
-				&options.sandbox_name.unwrap(),
-			);
 			let result = start::start_portable(&config);
 			match result {
 				Ok(_string) => {},
@@ -26,14 +31,12 @@ fn main() -> ExitCode {
 						"{}",
 						e.to_string(),
 					);
+					return ExitCode::FAILURE
 				}
 			};
 		}
 
 		types::Action::Inspect => {
-			let config = types::PortableConfig::new(
-				&options.sandbox_name.unwrap(),
-			);
 			config.print();
 		}
 	};
@@ -47,6 +50,7 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 		sandbox_name:	None,
 		exec_name:	None,
 		action:		types::Action::Start,
+		game_mode:	false,
 	};
 
 	for (idx, argument) in args.enumerate() {
@@ -56,15 +60,20 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 				ret.sandbox_name = Some(argument);
 			}
 			_ => {
-				if argument == "--inspect" {
-					ret.action = types::Action::Inspect;
-				} else {
-					println!(
-						"Unrecognised option {}",
-						argument,
-					);
+				match argument.as_str() {
+					"--inspect" => {
+						ret.action = types::Action::Inspect;
+					}
+					"-g" | "--game-mode" | "--discrete-gpu" => {
+						ret.game_mode = true;
+					}
+					_ => {
+						println!(
+							"Unrecognised option {}",
+							argument,
+						);
+					}
 				}
-
 			}
 		};
 	};
@@ -82,6 +91,7 @@ fn help() {
 	println!("	Note that <option> means required, [option] means optional");
 	println!("	Available options:");
 	println!("		--inspect: print out generated sandbox configuration");
+	println!("		--discrete-gpu / -g: expose all GPUs to the sandbox");
 	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
 	println!("		apply for sandbox name");
 }
