@@ -21,6 +21,9 @@ impl crate::types::PortableConfig {
 					String::from("/run/bashrc"),
 					String::from("-i"),
 				],
+			},
+			system: types::PortableSystemOpts {
+				deviceAllow: vec![],
 			}
 		}
 	}

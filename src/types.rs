@@ -17,6 +17,7 @@ pub enum Action {
 pub struct PortableConfig {
 	pub metadata:			PortableMetadata,
 	pub exec:			PortableExec,
+	pub system:			PortableSystemOpts,
 }
 
 #[allow(non_snake_case)]
@@ -32,4 +33,10 @@ pub struct PortableMetadata {
 pub struct PortableExec {
 	pub target:			String,
 	pub arguments:			Vec<String>,
+}
+
+#[allow(non_snake_case)]
+#[derive(serde::Serialize)]
+pub struct PortableSystemOpts {
+	pub deviceAllow:		Vec<String>,
 }

@@ -28,6 +28,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		},
 	};
 
+
 	let xdg_dir = xdg::BaseDirectories::with_prefix("bawn");
 
 	match xdg_dir.has_runtime_directory() {

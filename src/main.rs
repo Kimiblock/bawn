@@ -15,9 +15,12 @@ fn main() -> ExitCode {
 
 	match options.action {
 		types::Action::Start => {
-			let config = types::PortableConfig::new(
+			let mut config = types::PortableConfig::new(
 				&options.sandbox_name.unwrap(),
 			);
+			if options.game_mode {
+				config.system.deviceAllow = vec!["dgpu".to_string()]
+			}
 			let result = start::start_portable(&config);
 			match result {
 				Ok(_string) => {},
@@ -61,6 +64,9 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 					"--inspect" => {
 						ret.action = types::Action::Inspect;
 					}
+					"-g" | "--game-mode" | "--discrete-gpu" => {
+						ret.game_mode = true;
+					}
 					_ => {
 						println!(
 							"Unrecognised option {}",
@@ -85,6 +91,7 @@ fn help() {
 	println!("	Note that <option> means required, [option] means optional");
 	println!("	Available options:");
 	println!("		--inspect: print out generated sandbox configuration");
+	println!("		--discrete-gpu / -g: expose all GPUs to the sandbox");
 	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
 	println!("		apply for sandbox name");
 }
