@@ -77,7 +77,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 
 	let mut retry_counter: u8 = 0;
 	let mut rng = rand::rng();
-	let rand_file_pth: Result<std::path::PathBuf> = loop {
+	let rand_file: Result<std::path::PathBuf> = loop {
 		if retry_counter > 5 {
 			break Err(StartError("Maximum retry for config path exceeded".to_string()))
 		}
@@ -112,11 +112,22 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		}
 	};
 
-	let result = std::fs::write(&rand_file_pth.unwrap(), &content);
+	let rand_file_path = match rand_file {
+		Ok(pth) => pth,
+		Err(e) => return Err(StartError(e.to_string())),
+	};
+
+	let result = std::fs::write(&rand_file_path, &content);
 	match result {
 		Ok(()) => {}
 		Err(e) => {return Err(StartError(e.to_string()))}
 	}
+
+	let file = std::fs::File::open(&rand_file_path);
+	let file = match file {
+		Ok(fd) => fd,
+		Err(e) => return Err(StartError(e.to_string()))
+	};
 
 
 
