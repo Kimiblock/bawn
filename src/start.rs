@@ -51,7 +51,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 	]
 		.iter()
 		.collect();
-	config_path.push("gen");
+	config_path.push("bawn");
 
 	let exists = std::fs::exists(&config_path);
 	match exists {
@@ -71,6 +71,8 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		}
 	}
 
+	println!("Using Runtime Directory: {}", config_path.to_string_lossy());
+
 
 
 	let mut retry_counter: u8 = 0;
@@ -88,6 +90,22 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		match exists {
 			Ok(true) => {continue}
 			Ok(false) => {
+				let parent = file_pth.parent();
+				let parent_path = match parent {
+					Some(pth) => {pth}
+					None => {
+						break Err(
+							StartError("Could not obtain parent path".to_string()),
+						)
+					}
+				};
+				let result = std::fs::create_dir_all(&parent_path);
+				match result {
+					Ok(()) => {}
+					Err(e) => {
+						break Err(StartError(e.to_string()))
+					}
+				}
 				break Ok(file_pth)
 			}
 			Err(e) => {return Err(StartError(e.to_string()));}
