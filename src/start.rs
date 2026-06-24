@@ -138,14 +138,14 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 
 
 	let mut command = std::process::Command::new("/usr/bin/portable");
-	command.env("PORTABLE_CONF", "/proc/self/fd/1225");
+	command.env("PORTABLE_CONF", "/proc/self/fd/25");
 	command.arg("--actions");
 	command.arg("debug-shell");
 	let map_result = command.fd_mappings(
 		vec![
 			FdMapping{
 				parent_fd: file.into(),
-				child_fd: 1225,
+				child_fd: 25,
 			},
 		]
 	);
@@ -160,6 +160,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<Option<String>> 
 		Ok(result) => result,
 		Err(e) => return Err(StartError(e.to_string()))
 	};
+
 
 	let result = match child.wait() {
 		Ok(result) => result,
