@@ -22,6 +22,9 @@ fn main() -> ExitCode {
 	if options.x11 {
 		config.privacy.x11 = true;
 	}
+	if ! options.lockdown {
+		config.privacy.lockdown = false;
+	}
 
 	match options.action {
 		types::Action::Start => {
@@ -54,6 +57,7 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 		action:		types::Action::Start,
 		game_mode:	false,
 		x11:		false,
+		lockdown:	true,
 	};
 
 	for (idx, argument) in args.enumerate() {
@@ -69,6 +73,9 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 					}
 					"-x" | "--x11" => {
 						ret.x11 = true
+					}
+					"-n" | "--no-lockdown" => {
+						ret.lockdown = false
 					}
 					"-g" | "--game-mode" | "--discrete-gpu" => {
 						ret.game_mode = true;
@@ -99,7 +106,7 @@ fn help() {
 	println!("		--inspect: print out generated sandbox configuration");
 	println!("		--discrete-gpu / -g: expose all GPUs to the sandbox");
 	println!("		--x11 / -x: Enable access to X11 on Wayland");
-
+	println!("		--no-lockdown / -n: Disable lockdown mode");
 	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
 	println!("		apply for sandbox name");
 }
