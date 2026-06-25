@@ -6,6 +6,7 @@ pub struct CmdOptions {
 	pub action:			Action,
 	pub game_mode:			bool,
 	pub x11:			bool,
+	pub lockdown:			bool,
 }
 
 pub enum Action {
