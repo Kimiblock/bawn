@@ -17,11 +17,13 @@ fn main() -> ExitCode {
 		&options.sandbox_name.unwrap(),
 	);
 	if options.game_mode {
-		config.system.deviceAllow = vec!["dgpu".to_string()]
+		config.system.deviceAllow = vec!["dgpu".to_string()];
+	}
+	if options.x11 {
+		config.privacy.x11 = true;
 	}
 
 	match options.action {
-
 		types::Action::Start => {
 			let result = start::start_portable(&config);
 			match result {
@@ -51,6 +53,7 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 		exec_name:	None,
 		action:		types::Action::Start,
 		game_mode:	false,
+		x11:		false,
 	};
 
 	for (idx, argument) in args.enumerate() {
@@ -63,6 +66,9 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 				match argument.as_str() {
 					"--inspect" => {
 						ret.action = types::Action::Inspect;
+					}
+					"-x" | "--x11" => {
+						ret.x11 = true
 					}
 					"-g" | "--game-mode" | "--discrete-gpu" => {
 						ret.game_mode = true;
@@ -92,6 +98,8 @@ fn help() {
 	println!("	Available options:");
 	println!("		--inspect: print out generated sandbox configuration");
 	println!("		--discrete-gpu / -g: expose all GPUs to the sandbox");
+	println!("		--x11 / -x: Enable access to X11 on Wayland");
+
 	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
 	println!("		apply for sandbox name");
 }
