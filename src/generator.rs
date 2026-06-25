@@ -26,6 +26,10 @@ impl crate::types::PortableConfig {
 			},
 			system: types::PortableSystemOpts {
 				deviceAllow: vec![],
+			},
+			privacy: types::PortablePrivacyOpts {
+				lockdown: false,
+				x11: false,
 			}
 		}
 	}
