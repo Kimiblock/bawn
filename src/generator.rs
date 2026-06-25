@@ -7,11 +7,13 @@ impl crate::types::PortableConfig {
 		id.push_str(&sandbox_name.to_string());
 		let mut name = String::from("Bawn-transient-");
 		name.push_str(sandbox_name);
+		let mut state_dir = String::from(sandbox_name);
+		state_dir.push_str("_Data");
 		types::PortableConfig {
 			metadata: types::PortableMetadata {
 				appID: id,
 				friendlyName: name,
-				stateDirectory: sandbox_name.to_string(),
+				stateDirectory: state_dir,
 			},
 			exec: types::PortableExec {
 				target: "bash".to_string(),
