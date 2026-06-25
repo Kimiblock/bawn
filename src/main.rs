@@ -18,6 +18,7 @@ fn main() -> ExitCode {
 	);
 	if options.game_mode {
 		config.system.deviceAllow = vec!["dgpu".to_string()];
+		config.system.uclamp = String::from("100");
 	}
 	if options.x11 {
 		config.privacy.x11 = true;

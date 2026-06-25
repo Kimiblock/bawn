@@ -49,4 +49,5 @@ pub struct PortableExec {
 #[derive(serde::Serialize)]
 pub struct PortableSystemOpts {
 	pub deviceAllow:		Vec<String>,
+	pub uclamp:			String,
 }

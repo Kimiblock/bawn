@@ -25,7 +25,8 @@ impl crate::types::PortableConfig {
 				],
 			},
 			system: types::PortableSystemOpts {
-				deviceAllow: vec![],
+				deviceAllow:	vec![],
+				uclamp:		"0".to_string(),
 			},
 			privacy: types::PortablePrivacyOpts {
 				lockdown: true,
