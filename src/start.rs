@@ -2,37 +2,31 @@ use crate::types;
 use rand;
 use rand::prelude::*;
 use command_fds::{CommandFdExt, FdMapping};
-//use std::fs::File;
-//use std::result::Result;
+use thiserror::Error;
 
-//type Result<T> = std::result::Result<T, StartError>;
-
-#[derive(Debug)]
-//#[derive(Debug)]
-pub enum Error {
+#[derive(Error, Debug)]
+pub enum StartError {
+	#[error("I/O Error: {0}:?")]
 	IO(std::io::Error),
+	#[error("Invalid configuration: {0}")]
 	Config(String),
+	#[error("Invalid environment: {0}")]
 	Environment(String),
+	#[error("Base directories error: {0}:?")]
 	XDG(xdg::BaseDirectoriesError),
+	#[error("Collision while mapping file descriptors: {0}:?")]
 	FDMapping(command_fds::FdMappingCollision),
+	#[error("Error while starting Portable: {0}:?")]
 	StartPortable(std::io::Error),
 }
 
-
-impl std::fmt::Display for Error {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>)
-		-> std::result::Result<(), std::fmt::Error> {
-			write!(f, "Could not start Portable: {}", self)
-		}
-}
-
-pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
+pub fn start_portable(config: &types::PortableConfig) -> Result<(), StartError> {
 	let result = config.to_string();
 	let mut content = String::new();
 	match result {
 		Ok(con) => content.push_str(&con.to_string()),
 		Err(e) => {
-			return Err(Error::Config(e.to_string()))
+			return Err(StartError::Config(e.to_string()))
 		},
 	};
 
@@ -43,7 +37,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 		true => {}
 		false => {
 			return Err(
-				Error::Environment(
+				StartError::Environment(
 					"Could not locate XDG Runtime Directory"
 						.to_string(),
 				)
@@ -56,7 +50,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 		Ok(_rt) => {}
 		Err(e) => {
 			return Err(
-				Error::XDG(e),
+				StartError::XDG(e),
 			);
 		}
 	}
@@ -77,7 +71,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 				Ok(()) => {}
 				Err(e) => {
 					return Err(
-						Error::IO(e)
+						StartError::IO(e)
 					)
 				}
 			}
@@ -85,7 +79,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 		}
 		Err(e) => {
 			return Err(
-				Error::IO(e),
+				StartError::IO(e),
 			)
 		}
 	}
@@ -96,10 +90,10 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 
 	let mut retry_counter: u8 = 0;
 	let mut rng = rand::rng();
-	let rand_file: Result<std::path::PathBuf, Error> = loop {
+	let rand_file: Result<std::path::PathBuf, StartError> = loop {
 		if retry_counter > 5 {
 			break Err(
-				Error::Environment(
+				StartError::Environment(
 					"Maximum retry for config path exceeded"
 						.to_string(),
 				),
@@ -119,7 +113,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 					Some(pth) => {pth}
 					None => {
 						break Err(
-							Error::Environment(
+							StartError::Environment(
 								"Could not obtain parent path"
 									.to_string(),
 							)
@@ -131,14 +125,14 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 					Ok(()) => {}
 					Err(e) => {
 						break Err(
-							Error::IO(e),
+							StartError::IO(e),
 						)
 					}
 				}
 				break Ok(file_pth)
 			}
 			Err(e) => {
-				break Err(Error::IO(e))
+				break Err(StartError::IO(e))
 			}
 		}
 	};
@@ -152,14 +146,14 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 	match result {
 		Ok(()) => {}
 		Err(e) => {
-			return Err(Error::IO(e))
+			return Err(StartError::IO(e))
 		}
 	}
 
 	let file = std::fs::File::open(&rand_file_path);
 	let file = match file {
 		Ok(fd) => fd,
-		Err(e) => return Err(Error::IO(e))
+		Err(e) => return Err(StartError::IO(e))
 	};
 
 	let result = std::fs::remove_file(&rand_file_path);
@@ -183,7 +177,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 	);
 	match map_result {
 		Ok(_cmd) => {}
-		Err(e) => return Err(Error::FDMapping(e))
+		Err(e) => return Err(StartError::FDMapping(e))
 	}
 
 	let spawn = command.spawn();
@@ -191,7 +185,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 	let mut child = match spawn {
 		Ok(result) => result,
 		Err(e) => return Err(
-			Error::StartPortable(e)
+			StartError::StartPortable(e)
 		)
 	};
 
@@ -199,7 +193,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), Error> {
 	let result = match child.wait() {
 		Ok(result) => result,
 		Err(e) => return Err(
-			Error::StartPortable(e)
+			StartError::StartPortable(e)
 		)
 	};
 
