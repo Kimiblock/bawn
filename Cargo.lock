@@ -9,6 +9,7 @@ dependencies = [
  "command-fds",
  "rand",
  "serde",
+ "thiserror",
  "toml",
  "xdg",
 ]

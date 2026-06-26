@@ -7,5 +7,6 @@ edition = "2024"
 command-fds = "0.3.3"
 rand = "0.10.1"
 serde = { version = "1.0.228", features = ["derive"] }
+thiserror = "2.0.18"
 toml = "1.1.2"
 xdg = "3.0.0"
