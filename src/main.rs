@@ -16,8 +16,12 @@ fn main() -> ExitCode {
 	let mut config = types::PortableConfig::new(
 		&options.sandbox_name.unwrap(),
 	);
+	config.system.deviceAllow = vec![];
+	if options.kvm {
+		config.system.deviceAllow.push("kvm".to_string());
+	}
 	if options.game_mode {
-		config.system.deviceAllow = vec!["dgpu".to_string()];
+		config.system.deviceAllow.push("dgpu".to_string());
 		config.system.uclamp = String::from("100");
 	}
 	if options.x11 {
@@ -59,6 +63,7 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 		game_mode:	false,
 		x11:		false,
 		lockdown:	true,
+		kvm:		false,
 	};
 
 	for (idx, argument) in args.enumerate() {
@@ -80,6 +85,9 @@ fn cmdline_dispatcher(args: std::env::Args) -> types::CmdOptions {
 					}
 					"-g" | "--game-mode" | "--discrete-gpu" => {
 						ret.game_mode = true;
+					}
+					"-k" | "--kvm" => {
+						ret.kvm = true;
 					}
 					_ => {
 						println!(
@@ -108,6 +116,7 @@ fn help() {
 	println!("		--discrete-gpu / -g: expose all GPUs to the sandbox");
 	println!("		--x11 / -x: Enable access to X11 on Wayland");
 	println!("		--no-lockdown / -n: Disable lockdown mode");
+	println!("		-k / --kvm: Enable access to kernel virtual machine");
 	println!("	All arguments must be valid UTF-8 characters, additional restrictions");
 	println!("		apply for sandbox name");
 }
