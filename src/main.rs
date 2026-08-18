@@ -13,19 +13,19 @@ fn main() -> ExitCode {
 	}
 	let options = cmdline_dispatcher(args);
 
-	let mut config = types::PortableConfig::new(
+	let mut config = types::Config::new(
 		&options.sandbox_name.unwrap(),
 	);
-	config.system.deviceAllow = vec![];
+	config.system.device_allow = vec![];
 	if options.kvm {
-		config.system.deviceAllow.push("kvm".to_string());
+		config.system.device_allow.push("kvm".to_string());
 	}
 	if options.game_mode {
-		config.system.deviceAllow.push("dgpu".to_string());
-		config.system.uclamp = String::from("100");
+		config.system.device_allow.push("dgpu".to_string());
+		config.system.uclamp_max = 100;
 	}
 	if options.x11 {
-		config.privacy.x11 = true;
+		config.privacy.x11_compat = true;
 	}
 	if ! options.lockdown {
 		config.privacy.lockdown = false;

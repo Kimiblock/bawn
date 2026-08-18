@@ -20,7 +20,7 @@ pub enum StartError {
 	StartPortable(std::io::Error),
 }
 
-pub fn start_portable(config: &types::PortableConfig) -> Result<(), StartError> {
+pub fn start_portable(config: &types::Config) -> Result<(), StartError> {
 	let result = config.to_string();
 	let mut content = String::new();
 	match result {
@@ -102,7 +102,7 @@ pub fn start_portable(config: &types::PortableConfig) -> Result<(), StartError> 
 		retry_counter+=1;
 		let random = &rng.random_range(0..2147483647);
 		let mut file_pth: std::path::PathBuf = [&config_path].iter().collect();
-		file_pth.push(&config.metadata.appID);
+		file_pth.push(&config.metadata.sandbox_id);
 		file_pth.push(random.to_string());
 		let exists = std::fs::exists(&file_pth);
 		match exists {

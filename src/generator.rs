@@ -1,7 +1,7 @@
 use crate::types;
 use toml;
 
-impl crate::types::PortableConfig {
+impl crate::types::Config {
 	pub fn new (sandbox_name: &String) -> Self {
 		let mut id = String::from("org.kraftland.portable.");
 		id.push_str(&sandbox_name.to_string());
@@ -9,28 +9,35 @@ impl crate::types::PortableConfig {
 		name.push_str(sandbox_name);
 		let mut state_dir = String::from(sandbox_name);
 		state_dir.push_str("_Data");
-		types::PortableConfig {
-			metadata: types::PortableMetadata {
-				appID: id,
-				friendlyName: name,
-				stateDirectory: state_dir,
+		types::Config {
+			metadata: types::Metadata {
+				sandbox_id:		id,
+				display_name:		name,
+				state_directory:	state_dir,
+				config_version:		20,
 			},
-			exec: types::PortableExec {
-				target: "bash".to_string(),
+			network: types::Network {
+				allow_network:		true,
+				enable_filter:		false,
+			},
+			exec: types::Exec {
+				overlay:	false,
+				target:		"bash".to_string(),
 				arguments: vec![
-					String::from("--noprofile"),
-					String::from("--rcfile"),
-					String::from("/run/bashrc"),
 					String::from("-i"),
 				],
 			},
-			system: types::PortableSystemOpts {
-				deviceAllow:	vec![],
-				uclamp:		"0".to_string(),
+			system: types::SysMgmt {
+				allow_inhibit:		false,
+				conduct_inhibit:	false,
+				uclamp_max:		0,
+				device_allow:		vec![],
 			},
-			privacy: types::PortablePrivacyOpts {
-				lockdown: true,
-				x11: false,
+			privacy: types::Privacy {
+				lockdown:	true,
+				x11_compat:	false,
+				classic_notif:	false,
+				pipewire:	false,
 			}
 		}
 	}
