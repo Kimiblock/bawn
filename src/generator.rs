@@ -23,9 +23,7 @@ impl crate::types::Config {
 			exec: types::Exec {
 				overlay:	false,
 				target:		"bash".to_string(),
-				arguments: vec![
-					String::from("-i"),
-				],
+				arguments:	vec!["--noprofile".to_string(), "-i".to_string()],
 			},
 			system: types::SysMgmt {
 				allow_inhibit:		false,
