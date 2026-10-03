@@ -165,8 +165,6 @@ pub fn start_portable(config: &types::Config) -> Result<(), StartError> {
 
 	let mut command = std::process::Command::new("/usr/bin/portable");
 	command.env("PORTABLE_CONF", "/proc/self/fd/25");
-	command.arg("--actions");
-	command.arg("debug-shell");
 	let map_result = command.fd_mappings(
 		vec![
 			FdMapping{
